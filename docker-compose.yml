@@ -1,0 +1,12 @@
+version: '3.5'
+
+services:
+
+    service.nginx:
+      image: nginx:alpine
+      container_name: embyUrl-nginx
+      network_mode: host
+      volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./nginx/conf.d:/etc/nginx/conf.d
+      restart: always
