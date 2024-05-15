@@ -1,3 +1,3 @@
-#!/usr/bin/env bin/bash
+#!/usr/bin/env /bin/bash
 git pull
 docker compose restart
