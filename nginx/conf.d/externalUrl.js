@@ -25,9 +25,9 @@ const addExternalUrl = async (r, data, flags) => {
         // 外链地址协议默认从调用者取,如果上级还有反代服务器且上级配置了 https 而此服务是 http,需要自行将 ${r.variables.scheme} 改为 https
         // 如果是反代服务器两种都有,可以将这一行注释掉,统一使用第一行填写的地址
         serverAddr = r.headersIn.Host ? `${r.variables.scheme}://${r.headersIn.Host}${jfPath}` : serverAddr;
-        domain = `${serverAddr}/emby/videos/${r.uri.split('Items/')[1]}`;
         r.warn(`api_key: ${api_key}`);
         r.warn(`osType: ${osType}`);
+        r.warn(`serverAddr: ${serverAddr}`)
         if (data.MediaSources && data.MediaSources.length > 0) {
             data = addUrl(r, data);
         }
@@ -56,9 +56,12 @@ const addUrl = (r, data) => {
         //get displayTitle
         let displayTitle = '';
         try {
-            displayTitle = mediaSource.MediaStreams.find(s => s.Type === 'Video').DisplayTitle;
+            let vd = mediaSource.MediaStreams.find(s => s.Type === 'Video');
+            displayTitle = vd.DisplayTitle;
             displayTitle = typeof displayTitle === 'undefined' ? '' : displayTitle;
-            displayTitle = displayTitle + " " + formatBytes(mediaSource.Size)
+            let size = " " + formatBytes(mediaSource.Size);
+            displayTitle = displayTitle + size;
+            vd.DisplayTitle = displayTitle
         } catch (error) {
             r.error(`get displayTitle error: ${error}`);
         }
