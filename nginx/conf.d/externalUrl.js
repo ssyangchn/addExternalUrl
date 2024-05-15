@@ -46,7 +46,7 @@ const addUrl = (r, data) => {
         // this is not important, hit "/emby/videos/401929/" path level still worked
         let stName = data.Name;
         if (data.Type === 'Episode') {
-            stName = mediaSource.name;
+            stName = mediaSource.Name;
         }
         const streamUrl = `${serverAddr}/Items/${mediaSource.Id}/Download/${stName}.${mediaSource.Container}?api_key=${api_key}`;
         //get subtitle
