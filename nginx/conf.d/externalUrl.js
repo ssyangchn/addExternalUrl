@@ -44,8 +44,11 @@ const addUrl = (r, data) => {
         // origin link: /emby/videos/401929/stream.xxx?xxx
         // modify link: /emby/videos/401929/stream/xxx.xxx?xxx
         // this is not important, hit "/emby/videos/401929/" path level still worked
-
-        const streamUrl = `${serverAddr}/Items/${mediaSource.Id}/Download/${data.Name}.${mediaSource.Container}?api_key=${api_key}`;
+        let stName = data.Name;
+        if (data.Type === 'Episode') {
+            stName = mediaSource.name;
+        }
+        const streamUrl = `${serverAddr}/Items/${mediaSource.Id}/Download/${stName}.${mediaSource.Container}?api_key=${api_key}`;
         //get subtitle
         let subUrl = '';
         try {
@@ -76,7 +79,7 @@ const addUrl = (r, data) => {
             displayTitle,
             mediaSourceName: mediaSource.Name
         }
-        data.ExternalUrls.push(getPotUrl(mediaInfo));
+        data.ExternalUrls.push(getPotUrl2(mediaInfo));
         data.ExternalUrls.push(getInfuseUrl(mediaInfo));
         data.ExternalUrls.push(getNPlayerUrl(mediaInfo));
         //data.ExternalUrls.push(getVlcUrl(mediaInfo));
@@ -104,6 +107,15 @@ const getPotUrl = (mediaInfo) => {
     return {
         Name: `PotPlayer-${mediaInfo.mediaSourceName}(${mediaInfo.displayTitle})`,
         Url: `potplayer://${encodeURI(mediaInfo.streamUrl)} /sub=${encodeURI(mediaInfo.subUrl)} /seek=${getSeek(mediaInfo.position)}`
+    }
+}
+
+const getPotUrl2 = (mediaInfo) => {
+    let potUrl = `potplayer://${encodeURI(mediaInfo.streamUrl)} /sub=${encodeURI(mediaInfo.subUrl)} /seek=${getSeek(mediaInfo.position)}`;
+    potUrl = Buffer.from(potUrl, 'utf8').toString('base64');
+    return {
+        Name: `PotPlayer-${mediaInfo.mediaSourceName}(${mediaInfo.displayTitle})`,
+        Url: `${serverAddr}/${redirectKey}?link=${potUrl}`
     }
 }
 
